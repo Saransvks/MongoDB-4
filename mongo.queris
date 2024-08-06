@@ -1,0 +1,114 @@
+// Database Schema Design
+
+// users collection
+db.users.insertMany([
+  { user_id: 1, name: "John Doe", email: "john@example.com", role: "student" },
+  { user_id: 2, name: "Jane Smith", email: "jane@example.com", role: "mentor" },
+  // Add more users as needed
+]);
+
+// codekata collection
+db.codekata.insertMany([
+  { user_id: 1, problems_solved: 50 },
+  { user_id: 2, problems_solved: 30 },
+  // Add more entries as needed
+]);
+
+// attendance collection
+db.attendance.insertMany([
+  { user_id: 1, date: ISODate("2020-10-16"), status: "present" },
+  { user_id: 2, date: ISODate("2020-10-16"), status: "absent" },
+  // Add more entries as needed
+]);
+
+// topics collection
+db.topics.insertMany([
+  { topic_id: 1, topic_name: "JavaScript Basics", taught_month: "October" },
+  { topic_id: 2, topic_name: "React Fundamentals", taught_month: "October" },
+  // Add more topics as needed
+]);
+
+// tasks collection
+db.tasks.insertMany([
+  { task_id: 1, task_name: "Build a To-Do App", user_id: 1, task_date: ISODate("2020-10-20"), submitted: true },
+  { task_id: 2, task_name: "Create a Portfolio Website", user_id: 2, task_date: ISODate("2020-10-25"), submitted: false },
+  // Add more tasks as needed
+]);
+
+// company_drives collection
+db.company_drives.insertMany([
+  { drive_id: 1, drive_name: "Google Drive", drive_date: ISODate("2020-10-18"), students_appeared: [1, 2] },
+  { drive_id: 2, drive_name: "Amazon Drive", drive_date: ISODate("2020-10-30"), students_appeared: [1] },
+  // Add more drives as needed
+]);
+
+// mentors collection
+db.mentors.insertMany([
+  { mentor_id: 1, mentor_name: "Jane Smith", mentee_count: 20 },
+  { mentor_id: 2, mentor_name: "John Doe", mentee_count: 10 },
+  // Add more mentors as needed
+]);
+
+// MongoDB Queries
+
+// 1. Find all the information about each product
+db.products.find({});
+
+// 2. Find the product prices which are between 400 to 800
+db.products.find({ price: { $gte: 400, $lte: 800 } });
+
+// 3. Find the product prices which are not between 400 to 600
+db.products.find({ price: { $not: { $gte: 400, $lte: 600 } } });
+
+// 4. List the four products which are greater than 500 in price
+db.products.find({ price: { $gt: 500 } }).limit(4);
+
+// 5. Find the product name and product material of each product
+db.products.find({}, { _id: 0, product_name: 1, product_material: 1 });
+
+// 6. Find the product with a row id of 10
+db.products.find({ row_id: 10 });
+
+// 7. Find only the product name and product material
+db.products.find({}, { _id: 0, product_name: 1, product_material: 1 });
+
+// 8. Find all products which contain the value 'soft' in product material
+db.products.find({ product_material: /soft/i });
+
+// 9. Find products which contain product color 'indigo' and product price 492.00
+db.products.find({ product_color: 'indigo', price: 492.00 });
+
+// 10. Delete the products which have a product price value of 28
+db.products.deleteMany({ price: 28 });
+
+// Zen Class Program Queries
+
+// 1. Find all the topics and tasks which are taught in the month of October
+db.topics.find({ taught_month: "October" });
+db.tasks.find({ task_date: { $gte: ISODate('2020-10-01'), $lte: ISODate('2020-10-31') } });
+
+// 2. Find all the company drives which appeared between 15th Oct 2020 and 31st Oct 2020
+db.company_drives.find({ drive_date: { $gte: ISODate('2020-10-15'), $lte: ISODate('2020-10-31') } });
+
+// 3. Find all the company drives and students who appeared for the placement
+db.company_drives.find({ students_appeared: { $exists: true, $not: { $size: 0 } } });
+
+// 4. Find the number of problems solved by the user in codekata
+db.codekata.aggregate([
+  { $match: { user_id: ObjectId("user_id_here") } },
+  { $group: { _id: null, total_problems_solved: { $sum: "$problems_solved" } } }
+]);
+
+// 5. Find all the mentors who have mentee count more than 15
+db.mentors.find({ mentee_count: { $gt: 15 } });
+
+// 6. Find the number of users who are absent and task is not submitted between 15th Oct 2020 and 31st Oct 2020
+db.attendance.find({
+  date: { $gte: ISODate('2020-10-15'), $lte: ISODate('2020-10-31') },
+  status: "absent"
+}).count();
+
+db.tasks.find({
+  task_date: { $gte: ISODate('2020-10-15'), $lte: ISODate('2020-10-31') },
+  submitted: false
+}).count();
